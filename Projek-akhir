@@ -1,1 +1,56 @@
+from datetime import datetime
 
+
+def task_priority():
+    print("Task Priority\n")
+
+    list_task = []
+    jumlah_task = int(input("Jumlah Task\t\t   : "))
+    for i in range(jumlah_task):
+        print("\nTask ke-", i+1)
+        kategori_task = input("Kategori Task\t\t   : ")
+        nama_task = input("Nama Task\t\t   : ")
+        urgensi_task = float(input("Urgensi Task\t\t   : "))
+
+        # Memasukkan format tanggal dibuat
+        tanggal_dibuat = input("Tanggal dibuat (DD/MM/YYYY): ")
+        tanggal_dibuat = datetime.strptime(
+            tanggal_dibuat, "%d/%m/%Y").date()
+
+        # Memasukkan format deathline task
+        deathline_task = input("Deathline Task (DD/MM/YYYY): ")
+        deathline_task = datetime.strptime(
+            deathline_task, "%d/%m/%Y").date()
+
+        # Menghitung waktu deathline
+        waktu_deathline = (deathline_task - tanggal_dibuat).days
+
+        # Menghitung rasio
+        rasio = urgensi_task / waktu_deathline
+
+        list_task.append({
+            "kategori_task": kategori_task,
+            "nama_task": nama_task,
+            "urgensi_task": urgensi_task,
+            "tanggal_dibuat": tanggal_dibuat,
+            "deathline_task": deathline_task,
+            "waktu_deathline": waktu_deathline,
+            "rasio": rasio
+        })
+
+    list_task.sort(key=lambda x: x["rasio"], reverse=True)
+    print("\nTabel Task")
+    print("="*100)
+    print("No.  Kategori      Nama      Urgensi      Tanggal Dibuat      Deathline      Durasi      Rasio")
+    print("="*100)
+    for i in list_task:
+        print("{:<4} {:<13} {:<9} {:<12} {:<19} {:<15} {:<11} {:<10}".format(
+            list_task.index(
+                i)+1, i["kategori_task"], i["nama_task"], i["urgensi_task"],
+            i["tanggal_dibuat"].strftime(
+                "%d/%m/%Y"), i["deathline_task"].strftime("%d/%m/%Y"),
+            i["waktu_deathline"], i["rasio"]))
+    print("_"*100)
+
+
+task_priority()
