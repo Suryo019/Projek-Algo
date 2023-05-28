@@ -1,0 +1,85 @@
+import csv
+
+def baca_jadwal():
+    with open('jadwal.csv', 'r') as file:
+        jadwal_reader = csv.reader(file)
+        jadwal_list = list(jadwal_reader)
+    return jadwal_list
+
+def tampilkan_jadwal():
+    jadwal_list = baca_jadwal()
+    if len(jadwal_list) == 0:
+        print("Tidak ada jadwal.")
+    else:
+        print("Jadwal saat ini:")
+        for i, jadwal in enumerate(jadwal_list):
+            print(f"{i+1}. {jadwal[0]}")
+
+def tambah_jadwal(jadwal):
+    with open('jadwal.csv', 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(jadwal)
+    print("Jadwal berhasil ditambahkan.")
+
+def hapus_jadwal(jadwal):
+    jadwal_list = baca_jadwal()
+    if jadwal in jadwal_list:
+        jadwal_list.remove(jadwal)
+        with open('jadwal.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(jadwal_list)
+        print("Jadwal berhasil dihapus.")
+    else:
+        print("Jadwal tidak ditemukan.")
+
+def edit_jadwal(jadwal_lama, jadwal_baru):
+    jadwal_list = baca_jadwal()
+    if jadwal_lama in jadwal_list:
+        index = jadwal_list.index(jadwal_lama)
+        jadwal_list[index] = jadwal_baru
+        with open('jadwal.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(jadwal_list)
+        print("Jadwal berhasil diubah.")
+    else:
+        print("Jadwal tidak ditemukan.")
+        
+def main():
+    print("=== Aplikasi Jadwal ===")
+    tampilkan_jadwal()
+    while True:
+        print("\nMenu:")
+        print("1. Tampilkan Jadwal")
+        print("2. Tambah Jadwal")
+        print("3. Hapus Jadwal")
+        print("4. Edit Jadwal")
+        print("5. Keluar")
+
+        pilihan = input("Masukkan pilihan (1/2/3/4/5): ")
+
+        if pilihan == "1":
+            tampilkan_jadwal()
+        elif pilihan == "2":
+            kegiatan = input("Masukkan kegiatan: ")
+            tambah_jadwal([kegiatan])
+            tampilkan_jadwal()
+        elif pilihan == "3":
+            kegiatan = input("Masukkan kegiatan yang akan dihapus: ")
+            hapus_jadwal([kegiatan])
+            tampilkan_jadwal()
+        elif pilihan == "4":
+            kegiatan_lama = input("Masukkan kegiatan yang akan diubah: ")
+            kegiatan_baru = input("Masukkan kegiatan baru: ")
+            edit_jadwal([kegiatan_lama], [kegiatan_baru])
+            tampilkan_jadwal()
+        elif pilihan == "5":
+            print("Terima kasih!")
+            break
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi.")
+
+if __name__ == '__main__':
+    main()
+
+
+#NOTE BUAT FILE CSV DULU (jadwal.csv) baru bisa di run
