@@ -1,56 +1,76 @@
 from datetime import datetime
+from geopy.distance import geodesic
 
 
 def task_priority():
     print("Task Priority\n")
 
     list_task = []
-    jumlah_task = int(input("Jumlah Task\t\t   : "))
+    jumlah_task = int(input("Jumlah Task\t\t    : "))
+    lokasi_sekarang = input("Koordinat Lokasi Anda (x, y): ")
+    koordinat_x, koordinat_y = map(float, lokasi_sekarang.split(","))
+
     for i in range(jumlah_task):
         print("\nTask ke-", i+1)
-        kategori_task = input("Kategori Task\t\t   : ")
-        nama_task = input("Nama Task\t\t   : ")
-        urgensi_task = float(input("Urgensi Task\t\t   : "))
+        kategori_task = input("Kategori Task\t\t    : ")
+        nama_task = input("Nama Task\t\t    : ")
+        urgensi_task = float(input("Urgensi Task\t\t    : "))
 
         # Memasukkan format tanggal dibuat
-        tanggal_dibuat = input("Tanggal dibuat (DD/MM/YYYY): ")
+        tanggal_dibuat = input("Tanggal dibuat (DD/MM/YYYY) : ")
         tanggal_dibuat = datetime.strptime(
             tanggal_dibuat, "%d/%m/%Y").date()
 
-        # Memasukkan format deathline task
-        deathline_task = input("Deathline Task (DD/MM/YYYY): ")
-        deathline_task = datetime.strptime(
-            deathline_task, "%d/%m/%Y").date()
+        # Memasukkan format deadline task
+        deadline_task = input("Deadline Task (DD/MM/YYYY)  : ")
+        deadline_task = datetime.strptime(
+            deadline_task, "%d/%m/%Y").date()
 
-        # Menghitung waktu deathline
-        waktu_deathline = (deathline_task - tanggal_dibuat).days
+        # Memasukkan format lokasi task
+        nama_lokasi_task = input("Nama Lokasi Task\t    : ")
+        koordinat_lokasi_task = input("Koordinat Lokasi Task (x, y): ")
+        if koordinat_lokasi_task == "":
+            koordinat_lokasi_x, koordinat_lokasi_y = koordinat_x, koordinat_y
+        else:
+            koordinat_lokasi_x, koordinat_lokasi_y = map(
+                lambda x: float(x.strip()), koordinat_lokasi_task.split(","))
+
+        # Menghitung waktu deadline
+        waktu_deadline = (deadline_task - tanggal_dibuat).days
 
         # Menghitung rasio
-        rasio = urgensi_task / waktu_deathline
+        rasio = urgensi_task / waktu_deadline
+
+        # Menghitung jarak
+        jarak = geodesic((koordinat_x, koordinat_y),
+                         (koordinat_lokasi_x, koordinat_lokasi_y)).kilometers
 
         list_task.append({
             "kategori_task": kategori_task,
             "nama_task": nama_task,
             "urgensi_task": urgensi_task,
             "tanggal_dibuat": tanggal_dibuat,
-            "deathline_task": deathline_task,
-            "waktu_deathline": waktu_deathline,
-            "rasio": rasio
+            "deadline_task": deadline_task,
+            "nama_lokasi_task": nama_lokasi_task,
+            "koordinat_lokasi_task": koordinat_lokasi_task,
+            "waktu_deadline": waktu_deadline,
+            "rasio": rasio,
+            "jarak": jarak
         })
 
-    list_task.sort(key=lambda x: x["rasio"], reverse=True)
+    list_task.sort(key=lambda x: (x["rasio"], -x["jarak"]), reverse=True)
     print("\nTabel Task")
-    print("="*100)
-    print("No.  Kategori      Nama      Urgensi      Tanggal Dibuat      Deathline      Durasi      Rasio")
-    print("="*100)
+    print("="*145)
+    print("No.  Kategori      Nama      Urgensi      Tanggal Dibuat      Deadline        Durasi      Rasio      Lokasi Task           Jarak Task (km)")
+    print("="*145)
     for i in list_task:
-        print("{:<4} {:<13} {:<9} {:<12} {:<19} {:<15} {:<11} {:<10}".format(
+        print("{:<4} {:<13} {:<9} {:<12} {:<19} {:<15} {:<11} {:<10} {:<21} {:<20}".format(
             list_task.index(
                 i)+1, i["kategori_task"], i["nama_task"], i["urgensi_task"],
             i["tanggal_dibuat"].strftime(
-                "%d/%m/%Y"), i["deathline_task"].strftime("%d/%m/%Y"),
-            i["waktu_deathline"], i["rasio"]))
-    print("_"*100)
+                "%d/%m/%Y"), i["deadline_task"].strftime("%d/%m/%Y"),
+            i["waktu_deadline"], i["rasio"], i["nama_lokasi_task"], i["jarak"]))
+    print("_"*145)
 
 
 task_priority()
