@@ -1,0 +1,77 @@
+import csv
+from datetime import datetime
+
+
+def baca_task():
+    with open('jadwal.csv', 'r') as file:
+        task_reader = csv.DictReader(file)
+        task_list = list(task_reader)
+    return task_list
+
+
+def tampilkan_task():
+    task_list = baca_task()
+    if len(task_list) == 0:
+        print("Tidak ada task.")
+    else:
+        task_list.sort(key=lambda x: float(x["rasio"]), reverse=True)
+        print("\nTabel Task")
+        print("="*120)
+        print("No.  Kategori      Nama      Urgensi      Tanggal Dibuat      Deadline        Durasi      Rasio      Lokasi Task")
+        print("="*120)
+        for i, task in enumerate(task_list, start=1):
+            print("{:<4} {:<13} {:<9} {:<12} {:<19} {:<15} {:<11} {:<10} {:<21}".format(
+                i, task["kategori_task"], task["nama_task"], task["urgensi_task"],
+                task["tanggal_dibuat"], task["deadline_task"],
+                task["waktu_deadline"], task["rasio"], task["nama_lokasi_task"]))
+        print("_"*120)
+
+
+def tambah_task(task):
+    with open('jadwal.csv', 'a', newline='') as file:
+        fieldnames = ["kategori_task", "nama_task", "urgensi_task", "tanggal_dibuat",
+                      "deadline_task", "waktu_deadline", "rasio", "nama_lokasi_task"]
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writerow(task[0])
+    print("Jadwal berhasil ditambahkan.")
+
+
+task = []
+
+kategori_task = input("Kategori Task\t\t    : ")
+nama_task = input("Nama Task\t\t    : ")
+urgensi_task = float(input("Urgensi Task\t\t    : "))
+
+# Memasukkan format tanggal dibuat
+tanggal_dibuat = input("Tanggal dibuat (DD/MM/YYYY) : ")
+tanggal_dibuat = datetime.strptime(
+    tanggal_dibuat, "%d/%m/%Y").strftime("%d/%m/%Y")
+
+# Memasukkan format deadline task
+deadline_task = input("Deadline Task (DD/MM/YYYY)  : ")
+deadline_task = datetime.strptime(
+    deadline_task, "%d/%m/%Y").strftime("%d/%m/%Y")
+
+# Memasukkan format lokasi task
+nama_lokasi_task = input("Nama Lokasi Task\t    : ")
+
+# Menghitung waktu deadline
+waktu_deadline = (datetime.strptime(deadline_task, "%d/%m/%Y") -
+                  datetime.strptime(tanggal_dibuat, "%d/%m/%Y")).days
+
+# Menghitung rasio
+rasio = urgensi_task / waktu_deadline
+
+task.append({
+    "kategori_task": kategori_task,
+    "nama_task": nama_task,
+    "urgensi_task": urgensi_task,
+    "tanggal_dibuat": tanggal_dibuat,
+    "deadline_task": deadline_task,
+    "nama_lokasi_task": nama_lokasi_task,
+    "waktu_deadline": waktu_deadline,
+    "rasio": rasio
+})
+
+tambah_task(task)
+tampilkan_task()
